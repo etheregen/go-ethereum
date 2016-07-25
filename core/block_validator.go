@@ -221,7 +221,7 @@ func ValidateHeader(config *ChainConfig, pow pow.PoW, header *types.Header, pare
 		return BlockEqualTSErr
 	}
 
-	expd := CalcDifficulty(config, header.Time.Uint64(), parent.Time.Uint64(), parent.Number, parent.Difficulty)
+	expd := CalcDifficulty(config, header.Time.Uint64(), parent.Time.Uint64(), parent.Difficulty)
 	if expd.Cmp(header.Difficulty) != 0 {
 		return fmt.Errorf("Difficulty check failed for header %v, %v", header.Difficulty, expd)
 	}
@@ -253,93 +253,117 @@ func ValidateHeader(config *ChainConfig, pow pow.PoW, header *types.Header, pare
 // CalcDifficulty is the difficulty adjustment algorithm. It returns
 // the difficulty that a new block should have when created at time
 // given the parent block's time and difficulty.
-func CalcDifficulty(config *ChainConfig, time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
-	if config.IsHomestead(new(big.Int).Add(parentNumber, common.Big1)) {
-		return calcDifficultyHomestead(time, parentTime, parentNumber, parentDiff)
-	} else {
-		return calcDifficultyFrontier(time, parentTime, parentNumber, parentDiff)
-	}
+
+// Use the pre-difficulty bomb CalcDifficulty function, but keep the
+// config parameters as input.
+
+func CalcDifficulty(config *ChainConfig, time, parentTime uint64, parentDiff *big.Int) *big.Int {
+ 	diff := new(big.Int)
+ 	adjust := new(big.Int).Div(parentDiff, params.DifficultyBoundDivisor)
+ 	bigTime := new(big.Int)
+ 	bigParentTime := new(big.Int)
+
+ 	bigTime.SetUint64(time)
+ 	bigParentTime.SetUint64(parentTime)
+
+ 	if bigTime.Sub(bigTime, bigParentTime).Cmp(params.DurationLimit) < 0 {
+ 		diff.Add(parentDiff, adjust)
+ 	} else {
+ 		diff.Sub(parentDiff, adjust)
+ 	}
+ 	if diff.Cmp(params.MinimumDifficulty) < 0 {
+		return params.MinimumDifficulty
+ 	}
+ 	return diff
 }
 
-func calcDifficultyHomestead(time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
-	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.mediawiki
-	// algorithm:
-	// diff = (parent_diff +
-	//         (parent_diff / 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
-	//        ) + 2^(periodCount - 2)
+// func CalcDifficulty(config *ChainConfig, time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
+// 	if config.IsHomestead(new(big.Int).Add(parentNumber, common.Big1)) {
+// 		return calcDifficultyHomestead(time, parentTime, parentNumber, parentDiff)
+// 	} else {
+// 		return calcDifficultyFrontier(time, parentTime, parentNumber, parentDiff)
+// 	}
+// }
 
-	bigTime := new(big.Int).SetUint64(time)
-	bigParentTime := new(big.Int).SetUint64(parentTime)
+// func calcDifficultyHomestead(time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
+// 	// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-2.mediawiki
+// 	// algorithm:
+// 	// diff = (parent_diff +
+// 	//         (parent_diff / 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
+// 	//        ) + 2^(periodCount - 2)
 
-	// holds intermediate values to make the algo easier to read & audit
-	x := new(big.Int)
-	y := new(big.Int)
+// 	bigTime := new(big.Int).SetUint64(time)
+// 	bigParentTime := new(big.Int).SetUint64(parentTime)
 
-	// 1 - (block_timestamp -parent_timestamp) // 10
-	x.Sub(bigTime, bigParentTime)
-	x.Div(x, big10)
-	x.Sub(common.Big1, x)
+// 	// holds intermediate values to make the algo easier to read & audit
+// 	x := new(big.Int)
+// 	y := new(big.Int)
 
-	// max(1 - (block_timestamp - parent_timestamp) // 10, -99)))
-	if x.Cmp(bigMinus99) < 0 {
-		x.Set(bigMinus99)
-	}
+// 	// 1 - (block_timestamp -parent_timestamp) // 10
+// 	x.Sub(bigTime, bigParentTime)
+// 	x.Div(x, big10)
+// 	x.Sub(common.Big1, x)
 
-	// (parent_diff + parent_diff // 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
-	y.Div(parentDiff, params.DifficultyBoundDivisor)
-	x.Mul(y, x)
-	x.Add(parentDiff, x)
+// 	// max(1 - (block_timestamp - parent_timestamp) // 10, -99)))
+// 	if x.Cmp(bigMinus99) < 0 {
+// 		x.Set(bigMinus99)
+// 	}
 
-	// minimum difficulty can ever be (before exponential factor)
-	if x.Cmp(params.MinimumDifficulty) < 0 {
-		x.Set(params.MinimumDifficulty)
-	}
+// 	// (parent_diff + parent_diff // 2048 * max(1 - (block_timestamp - parent_timestamp) // 10, -99))
+// 	y.Div(parentDiff, params.DifficultyBoundDivisor)
+// 	x.Mul(y, x)
+// 	x.Add(parentDiff, x)
 
-	// for the exponential factor
-	periodCount := new(big.Int).Add(parentNumber, common.Big1)
-	periodCount.Div(periodCount, ExpDiffPeriod)
+// 	// minimum difficulty can ever be (before exponential factor)
+// 	if x.Cmp(params.MinimumDifficulty) < 0 {
+// 		x.Set(params.MinimumDifficulty)
+// 	}
 
-	// the exponential factor, commonly referred to as "the bomb"
-	// diff = diff + 2^(periodCount - 2)
-	if periodCount.Cmp(common.Big1) > 0 {
-		y.Sub(periodCount, common.Big2)
-		y.Exp(common.Big2, y, nil)
-		x.Add(x, y)
-	}
+// 	// for the exponential factor
+// 	periodCount := new(big.Int).Add(parentNumber, common.Big1)
+// 	periodCount.Div(periodCount, ExpDiffPeriod)
 
-	return x
-}
+// 	// the exponential factor, commonly referred to as "the bomb"
+// 	// diff = diff + 2^(periodCount - 2)
+// 	if periodCount.Cmp(common.Big1) > 0 {
+// 		y.Sub(periodCount, common.Big2)
+// 		y.Exp(common.Big2, y, nil)
+// 		x.Add(x, y)
+// 	}
 
-func calcDifficultyFrontier(time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
-	diff := new(big.Int)
-	adjust := new(big.Int).Div(parentDiff, params.DifficultyBoundDivisor)
-	bigTime := new(big.Int)
-	bigParentTime := new(big.Int)
+// 	return x
+// }
 
-	bigTime.SetUint64(time)
-	bigParentTime.SetUint64(parentTime)
+// func calcDifficultyFrontier(time, parentTime uint64, parentNumber, parentDiff *big.Int) *big.Int {
+// 	diff := new(big.Int)
+// 	adjust := new(big.Int).Div(parentDiff, params.DifficultyBoundDivisor)
+// 	bigTime := new(big.Int)
+// 	bigParentTime := new(big.Int)
 
-	if bigTime.Sub(bigTime, bigParentTime).Cmp(params.DurationLimit) < 0 {
-		diff.Add(parentDiff, adjust)
-	} else {
-		diff.Sub(parentDiff, adjust)
-	}
-	if diff.Cmp(params.MinimumDifficulty) < 0 {
-		diff.Set(params.MinimumDifficulty)
-	}
+// 	bigTime.SetUint64(time)
+// 	bigParentTime.SetUint64(parentTime)
 
-	periodCount := new(big.Int).Add(parentNumber, common.Big1)
-	periodCount.Div(periodCount, ExpDiffPeriod)
-	if periodCount.Cmp(common.Big1) > 0 {
-		// diff = diff + 2^(periodCount - 2)
-		expDiff := periodCount.Sub(periodCount, common.Big2)
-		expDiff.Exp(common.Big2, expDiff, nil)
-		diff.Add(diff, expDiff)
-		diff = common.BigMax(diff, params.MinimumDifficulty)
-	}
+// 	if bigTime.Sub(bigTime, bigParentTime).Cmp(params.DurationLimit) < 0 {
+// 		diff.Add(parentDiff, adjust)
+// 	} else {
+// 		diff.Sub(parentDiff, adjust)
+// 	}
+// 	if diff.Cmp(params.MinimumDifficulty) < 0 {
+// 		diff.Set(params.MinimumDifficulty)
+// 	}
 
-	return diff
-}
+// 	periodCount := new(big.Int).Add(parentNumber, common.Big1)
+// 	periodCount.Div(periodCount, ExpDiffPeriod)
+// 	if periodCount.Cmp(common.Big1) > 0 {
+// 		// diff = diff + 2^(periodCount - 2)
+// 		expDiff := periodCount.Sub(periodCount, common.Big2)
+// 		expDiff.Exp(common.Big2, expDiff, nil)
+// 		diff.Add(diff, expDiff)
+// 		diff = common.BigMax(diff, params.MinimumDifficulty)
+// 	}
+
+// 	return diff
+// }
 
 // CalcGasLimit computes the gas limit of the next block after parent.
 // The result may be modified by the caller.

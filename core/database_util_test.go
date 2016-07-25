@@ -62,27 +62,27 @@ func (d *diffTest) UnmarshalJSON(b []byte) (err error) {
 	return nil
 }
 
-func TestDifficultyFrontier(t *testing.T) {
-	file, err := os.Open("../tests/files/BasicTests/difficulty.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer file.Close()
+// func TestDifficultyFrontier(t *testing.T) {
+// 	file, err := os.Open("../tests/files/BasicTests/difficulty.json")
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	defer file.Close()
 
-	tests := make(map[string]diffTest)
-	err = json.NewDecoder(file).Decode(&tests)
-	if err != nil {
-		t.Fatal(err)
-	}
+// 	tests := make(map[string]diffTest)
+// 	err = json.NewDecoder(file).Decode(&tests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
 
-	for name, test := range tests {
-		number := new(big.Int).Sub(test.CurrentBlocknumber, big.NewInt(1))
-		diff := calcDifficultyFrontier(test.CurrentTimestamp, test.ParentTimestamp, number, test.ParentDifficulty)
-		if diff.Cmp(test.CurrentDifficulty) != 0 {
-			t.Error(name, "failed. Expected", test.CurrentDifficulty, "and calculated", diff)
-		}
-	}
-}
+// 	for name, test := range tests {
+// 		number := new(big.Int).Sub(test.CurrentBlocknumber, big.NewInt(1))
+// 		diff := calcDifficultyFrontier(test.CurrentTimestamp, test.ParentTimestamp, number, test.ParentDifficulty)
+// 		if diff.Cmp(test.CurrentDifficulty) != 0 {
+// 			t.Error(name, "failed. Expected", test.CurrentDifficulty, "and calculated", diff)
+// 		}
+// 	}
+// }
 
 // Tests block header storage and retrieval operations.
 func TestHeaderStorage(t *testing.T) {

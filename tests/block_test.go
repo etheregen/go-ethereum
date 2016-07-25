@@ -134,80 +134,80 @@ func TestBcState(t *testing.T) {
 	}
 }
 
-// Homestead tests
-func TestHomesteadBcValidBlockTests(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcValidBlockTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// // Homestead tests
+// func TestHomesteadBcValidBlockTests(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcValidBlockTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcUncleHeaderValidityTests(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcUncleHeaderValiditiy.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcUncleHeaderValidityTests(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcUncleHeaderValiditiy.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcUncleTests(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcUncleTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcUncleTests(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcUncleTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcInvalidHeaderTests(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcInvalidHeaderTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcInvalidHeaderTests(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcInvalidHeaderTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcRPCAPITests(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcRPC_API_Test.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcRPCAPITests(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcRPC_API_Test.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcForkStress(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcForkStressTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcForkStress(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcForkStressTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcTotalDifficulty(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcTotalDifficultyTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcTotalDifficulty(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcTotalDifficultyTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcWallet(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcWalletTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcWallet(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcWalletTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcGasPricer(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcGasPricerTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcGasPricer(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcGasPricerTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcMultiChain(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcMultiChainTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcMultiChain(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcMultiChainTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
 
-func TestHomesteadBcState(t *testing.T) {
-	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcStateTest.json"), BlockSkipTests)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
+// func TestHomesteadBcState(t *testing.T) {
+// 	err := RunBlockTest(big.NewInt(0), filepath.Join(blockTestDir, "Homestead", "bcStateTest.json"), BlockSkipTests)
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// }
