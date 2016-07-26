@@ -57,7 +57,7 @@ func TestConsoleWelcome(t *testing.T) {
 	geth.expect(`
 Welcome to the Geth JavaScript console!
 
-instance: Geth/v{{gethver}}/{{goos}}/{{gover}}
+instance: Geth/Etheregen/v{{gethver}}/{{goos}}/{{gover}}
 coinbase: {{.Etherbase}}
 at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
@@ -151,7 +151,7 @@ func testAttachWelcome(t *testing.T, geth *testgeth, endpoint string) {
 	attach.expect(`
 Welcome to the Geth JavaScript console!
 
-instance: Geth/v{{gethver}}/{{goos}}/{{gover}}
+instance: Geth/Etheregen/v{{gethver}}/{{goos}}/{{gover}}
 coinbase: {{etherbase}}
 at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}
